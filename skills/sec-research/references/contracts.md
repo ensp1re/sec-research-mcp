@@ -25,4 +25,4 @@ Reviewed IDs: `revenue`, `net_income`, `operating_cash_flow`, `cash`, `gross_mar
 
 ## Demo fixtures
 
-Labeled samples under `fixtures/demo/`. Do not present them as a live EDGAR pull unless `SEC_USER_AGENT` is set and coverage says live.
+Labeled samples under `fixtures/demo/` when `SEC_DEMO=1`. Do not present them as a live EDGAR pull unless coverage says live.

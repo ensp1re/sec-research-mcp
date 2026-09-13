@@ -13,6 +13,30 @@ export { compareSeries } from "./compare.js";
 export { compareParagraphs } from "./filing-compare.js";
 export { saveDataset, loadDataset, queryDataset, exportCsv } from "./datasets.js";
 export { companyFactsUrl, submissionsUrl, tickerMapUrl, filingDocumentUrl } from "./edgar.js";
+export { runIsolatedQuery } from "./isolated-query.js";
+export { createWatch, evaluateWatch, listWatchEvents, listWatches } from "./watches.js";
+export { parse13F, holdingsUrl, thirteenFAccessions } from "./holdings.js";
+export { parseRulemaking, rulemakingUrl } from "./rulemaking.js";
+export { resolveUserAgent, generateUserAgent } from "./user-agent.js";
+export {
+  authorize,
+  authenticate,
+  assertOwned,
+  assertQuota,
+  assertStoreQuota,
+  assertStoreOwned,
+  postgresUpsertJob,
+  emptyWorkspaceState,
+  MemoryMetadataStore,
+  SqliteMetadataStore,
+  PostgresMetadataStore,
+  defaultMemoryStore,
+  seedOwner,
+  WorkspaceError,
+  type MetadataStore,
+  type Principal,
+  type JobRecord,
+} from "./workspace.js";
 export {
   runChart,
   runCompare,
@@ -26,8 +50,13 @@ export {
   runFilingRead,
   runFilingsSearch,
   runFinancials,
+  runHoldings,
   runResearch,
   runResolve,
+  runRulemaking,
+  runWatchCreate,
+  runWatchEvaluate,
+  runWatchList,
   isLive,
   type Runtime,
 } from "./workflow.js";

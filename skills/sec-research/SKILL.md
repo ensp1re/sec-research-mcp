@@ -33,7 +33,7 @@ Client config (cwd must be the repo root):
 }
 ```
 
-Demo mode (default): labeled fixtures, no EDGAR. Live mode: set `SEC_USER_AGENT` to a descriptive contact string. Load [references/clients.md](references/clients.md) for other clients.
+Live EDGAR is the default. If `SEC_USER_AGENT` is unset, the runtime generates one. Set `SEC_DEMO=1` for fixtures. Load [references/clients.md](references/clients.md) for other clients.
 
 ## Workflow
 
@@ -45,6 +45,8 @@ Demo mode (default): labeled fixtures, no EDGAR. Live mode: set `SEC_USER_AGENT`
 6. `sec_dataset_describe` / `sec_dataset_query` / `sec_dataset_export` on the `dataset_id` from financials or compare.
 7. `sec_chart_create` only after a series exists. Show SVG/CSV; do not invent plot points.
 8. `sec_research_run` when the user wants a packet (question, table, coverage, sources).
+9. `sec_holdings_get` for 13F-style holdings. `sec_rulemaking_get` for rulemaking rows.
+10. `sec_watch_create`, `sec_watch_list`, `sec_watch_events` for persistent watches.
 
 Load [references/tools.md](references/tools.md) for arguments. Load [references/contracts.md](references/contracts.md) before interpreting numbers.
 

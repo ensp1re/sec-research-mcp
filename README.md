@@ -12,7 +12,7 @@ Working name. Package and trademark checks are still open.
 - Render a line chart (SVG, PNG, CSV, Vega-Lite spec)
 - Build a short evidence packet with coverage and accessions
 
-Default mode uses **labeled fixtures** (Apple / Microsoft samples). It does not download EDGAR until you set `SEC_USER_AGENT`.
+Live EDGAR is the default. If `SEC_USER_AGENT` is unset, the runtime generates one. Set `SEC_DEMO=1` for labeled Apple / Microsoft fixtures.
 
 ## Install
 
@@ -41,6 +41,9 @@ node apps/cli/dist/main.js financials AAPL revenue
 node apps/cli/dist/main.js compare AAPL,MSFT revenue
 node apps/cli/dist/main.js chart AAPL revenue
 node apps/cli/dist/main.js filing AAPL
+SEC_DEMO=1 node apps/cli/dist/main.js holdings AAPL
+SEC_DEMO=1 node apps/cli/dist/main.js rulemaking
+SEC_DEMO=1 node apps/cli/dist/main.js watch-create AAPL
 ```
 
 Metrics in the demo set: `revenue`, `net_income`, `cash`, `gross_margin`, `operating_cash_flow`.
@@ -61,21 +64,21 @@ Point an MCP client at the built server. Logs stay on stderr.
 }
 ```
 
-HTTP (loopback): `npm run api` then `GET /health`, `/v1/companies?q=AAPL`, `/v1/filings?q=AAPL`.
+HTTP (loopback): `npm run api` then `GET /health`, `/v1/companies?q=AAPL`, `/v1/filings?q=AAPL`, `/v1/holdings?q=AAPL`. Watch and job routes take `Authorization: Bearer <key>` (default local key `local-dev`, or `SEC_API_KEY`).
 
-Tools: `sec_coverage_get`, `sec_company_resolve`, `sec_filings_search`, `sec_filing_read`, `sec_filing_compare`, `sec_concepts_search`, `sec_financials_get`, `sec_companies_compare`, `sec_dataset_describe`, `sec_dataset_query`, `sec_dataset_export`, `sec_chart_create`, `sec_research_run`.
+Tools: `sec_coverage_get`, `sec_company_resolve`, `sec_filings_search`, `sec_filing_read`, `sec_filing_compare`, `sec_concepts_search`, `sec_financials_get`, `sec_companies_compare`, `sec_dataset_describe`, `sec_dataset_query`, `sec_dataset_export`, `sec_chart_create`, `sec_research_run`, `sec_holdings_get`, `sec_rulemaking_get`, `sec_watch_create`, `sec_watch_list`, `sec_watch_events`.
 
 Agents: copy [skills/](skills/) into the client skills path. `sec-research` is the single-worker MCP workflow. `sec-research-orchestrate` splits resolve / numbers / filings / charts / critic across agents.
 
 ## Live EDGAR
 
-Live requests need a descriptive User-Agent with contact, as the SEC asks:
+Live requests send a User-Agent. Set your own if you have one; otherwise the runtime generates `sec-research-mcp/<id> (research; qa@localhost.invalid)`:
 
 ```bash
 export SEC_USER_AGENT="YourName your@email.example"
 ```
 
-All outbound SEC traffic goes through one allowlisted broker (`data.sec.gov`, `www.sec.gov`, `efts.sec.gov`). Arbitrary URLs are rejected. Demo mode still works without this variable.
+`SEC_DEMO=1` stays on fixtures. All outbound SEC traffic goes through one allowlisted broker (`data.sec.gov`, `www.sec.gov`, `efts.sec.gov`). Arbitrary URLs are rejected.
 
 ## Rules the tools follow
 
@@ -86,7 +89,7 @@ All outbound SEC traffic goes through one allowlisted broker (`data.sec.gov`, `w
 
 ## Not in this release
 
-Hosted accounts, watches, ownership/13F packs, investment advice, prices, and EDGAR filing submission.
+Public IdP OAuth, production multi-tenant SaaS, object-storage vendors, investment advice, prices, and EDGAR filing submission. 13F holdings and rulemaking return sourced rows when the payload has them, otherwise explicit incomplete coverage.
 
 ## Develop
 
