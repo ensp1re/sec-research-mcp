@@ -16,6 +16,7 @@
     "prepare": "husky",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "build": "tsc -b",
     "typecheck": "tsc -b",
     "test:harness": "node --test scripts/harness/runner.test.mjs",
     "test:domain": "npm run test -w @sec-research/domain",
