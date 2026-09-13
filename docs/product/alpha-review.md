@@ -4,18 +4,15 @@ Date: 2026-09-14
 
 ## What works locally
 
-- `sec-research doctor` checks Node and fixture paths.
-- `sec-research demo` prints an evidence packet for AAPL revenue from fixtures.
-- MCP stdio tools: resolve, financials, chart, filing read, research, coverage.
+- Doctor, coverage, resolve, filings search/read/compare, concepts, financials, company compare, datasets, export, charts, evidence packets.
+- MCP stdio and loopback HTTP (`/v1/companies`, `/v1/filings`, `/v1/charts`, `/v1/research-runs`) share the engine.
+- Live EDGAR uses `SEC_USER_AGENT` and the allowlisted broker; CI uses mock fetch.
 - Missing metrics stay null with an explicit missingness code.
-- Charts include SVG, PNG, CSV, and a Vega-Lite spec.
 
 ## Limits
 
-- Demo mode uses labeled fixtures, not a live EDGAR crawl.
-- Live fetches require `SEC_USER_AGENT` and go only through the allowlisted broker.
-- Advanced SQL is rejected except a single SELECT gate; DuckDB isolation is not in this alpha.
-- Hosted workspaces, watches, and ownership packs are out of this slice.
+- DuckDB process isolation is not in this slice (bounded SELECT only).
+- Hosted workspaces, watches, ownership/13F, and regulatory packs are still later phases.
 
 ## Re-estimate
 

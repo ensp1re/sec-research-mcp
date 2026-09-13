@@ -1,0 +1,14 @@
+{
+  "name": "@sec-research/api",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@sec-research/engine": "0.0.0"
+  }
+}

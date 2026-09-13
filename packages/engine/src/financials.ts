@@ -113,15 +113,7 @@ function collectTagPoints(factsPayload: unknown, cik: string, metric: MetricSpec
 
 function deriveGrossMargin(factsPayload: unknown, cik: string): FactPoint[] {
   const revenue = collectTagPoints(factsPayload, cik, METRICS[METRIC_ID.REVENUE]);
-  const usGaap = getUsGaap(factsPayload);
-  const gpSpec: MetricSpec = {
-    id: METRIC_ID.REVENUE,
-    tags: ["GrossProfit"],
-    additive: true,
-    period: "duration",
-    unit: "USD",
-  };
-  const gross = usGaap ? collectTagPoints(factsPayload, cik, gpSpec).map((row) => ({ ...row, metricId: "gross_profit" })) : [];
+  const gross = collectTagPoints(factsPayload, cik, METRICS[METRIC_ID.GROSS_PROFIT]);
   const byEnd = new Map(gross.map((row) => [row.periodEnd, row]));
   return revenue.map((row) => {
     const match = byEnd.get(row.periodEnd);
@@ -197,10 +189,17 @@ function stringify(value: unknown): string | null {
 function classifyPeriod(start: string | null, end: string | null, fp: string | null, metric: MetricSpec): PeriodKind {
   if (metric.period === "instant") return PERIOD_KIND.INSTANT;
   if (fp === "FY" || fp === "CY") return PERIOD_KIND.ANNUAL;
-  if (fp === "Q1" || fp === "Q2" || fp === "Q3" || fp === "Q4") return PERIOD_KIND.DISCRETE_QUARTER;
+  if (fp === "Q1" || fp === "Q2" || fp === "Q3" || fp === "Q4") {
+    if (start && end) {
+      const days = (Date.parse(end) - Date.parse(start)) / 86400000;
+      if (days > 150) return PERIOD_KIND.YEAR_TO_DATE;
+    }
+    return PERIOD_KIND.DISCRETE_QUARTER;
+  }
   if (start && end) {
     const days = (Date.parse(end) - Date.parse(start)) / 86400000;
     if (days > 300) return PERIOD_KIND.ANNUAL;
+    if (days > 150 && days < 300) return PERIOD_KIND.YEAR_TO_DATE;
     if (days > 70 && days < 100) return PERIOD_KIND.DISCRETE_QUARTER;
   }
   return PERIOD_KIND.ANNUAL;

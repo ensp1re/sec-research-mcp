@@ -2,7 +2,7 @@ const ALLOWED_HOSTS = new Set(["data.sec.gov", "www.sec.gov", "efts.sec.gov"]);
 
 export interface BrokerOptions {
   userAgent: string;
-  fetchImpl?: typeof fetch;
+  fetchImpl?: typeof fetch | undefined;
   minIntervalMs?: number;
   now?: () => number;
   sleep?: (ms: number) => Promise<void>;
@@ -30,10 +30,7 @@ export class SecBroker {
   async getText(url: string): Promise<{ body: string; retrievedAt: string; finalUrl: string }> {
     const parsed = this.assertAllowed(url);
     await this.pace();
-    const response = await this.fetchImpl(parsed.href, {
-      headers: { "User-Agent": this.userAgent, Accept: "application/json, text/html, */*" },
-      redirect: "manual",
-    });
+    const response = await this.request(parsed.href);
     if (response.status >= 300 && response.status < 400) {
       throw new Error(`SEC redirect refused: ${response.status}`);
     }
@@ -45,6 +42,18 @@ export class SecBroker {
       throw new Error("SEC returned a block page");
     }
     return { body, retrievedAt: new Date(this.now()).toISOString(), finalUrl: parsed.href };
+  }
+
+  private async request(href: string): Promise<Response> {
+    const headers = { "User-Agent": this.userAgent, Accept: "application/json, text/html, */*" };
+    let response = await this.fetchImpl(href, { headers, redirect: "manual" });
+    if (response.status === 429) {
+      const retryAfter = Number(response.headers.get("retry-after") ?? "1");
+      await this.sleep(Math.min(Math.max(retryAfter, 1), 8) * 1000);
+      await this.pace();
+      response = await this.fetchImpl(href, { headers, redirect: "manual" });
+    }
+    return response;
   }
 
   private assertAllowed(url: string): URL {

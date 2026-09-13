@@ -36,9 +36,11 @@ That prints an evidence packet for AAPL revenue from fixtures. Then:
 ```bash
 node apps/cli/dist/main.js doctor
 node apps/cli/dist/main.js resolve AAPL
+node apps/cli/dist/main.js filings AAPL 10-K
 node apps/cli/dist/main.js financials AAPL revenue
+node apps/cli/dist/main.js compare AAPL,MSFT revenue
 node apps/cli/dist/main.js chart AAPL revenue
-node apps/cli/dist/main.js filing
+node apps/cli/dist/main.js filing AAPL
 ```
 
 Metrics in the demo set: `revenue`, `net_income`, `cash`, `gross_margin`, `operating_cash_flow`.
@@ -59,7 +61,9 @@ Point an MCP client at the built server. Logs stay on stderr.
 }
 ```
 
-Tools: `sec_company_resolve`, `sec_financials_get`, `sec_chart_create`, `sec_filing_read`, `sec_research_run`, `sec_coverage_get`.
+HTTP (loopback): `npm run api` then `GET /health`, `/v1/companies?q=AAPL`, `/v1/filings?q=AAPL`.
+
+Tools: `sec_coverage_get`, `sec_company_resolve`, `sec_filings_search`, `sec_filing_read`, `sec_filing_compare`, `sec_concepts_search`, `sec_financials_get`, `sec_companies_compare`, `sec_dataset_describe`, `sec_dataset_query`, `sec_dataset_export`, `sec_chart_create`, `sec_research_run`.
 
 Agents: copy [skills/](skills/) into the client skills path. `sec-research` is the single-worker MCP workflow. `sec-research-orchestrate` splits resolve / numbers / filings / charts / critic across agents.
 

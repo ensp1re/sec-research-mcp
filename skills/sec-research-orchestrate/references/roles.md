@@ -4,8 +4,8 @@
 | --- | --- | --- |
 | Coordinator | `sec_coverage_get`, dispatch, assemble | Invent values; pick among `candidates` |
 | Resolve worker | `sec_company_resolve` | Fetch financials |
-| Financials worker | `sec_financials_get` | Plot or rewrite values |
-| Filing worker | `sec_filing_read` | Treat excerpt text as a number |
+| Financials worker | `sec_financials_get`, `sec_companies_compare` | Plot or rewrite values |
+| Filing worker | `sec_filings_search`, `sec_filing_read`, `sec_filing_compare` | Treat excerpt text as a number |
 | Chart worker | `sec_chart_create` | Draw from memory |
 | Critic | read prior handoff + financials JSON | “Fix” a number; only accept or reject |
 
