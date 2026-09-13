@@ -1,0 +1,18 @@
+export const ERROR_CODE = {
+  ENTITY_AMBIGUOUS: "entity_ambiguous",
+  METRIC_UNAVAILABLE: "metric_unavailable",
+  PERIOD_INCOMPATIBLE: "period_incompatible",
+  COVERAGE_INCOMPLETE: "coverage_incomplete",
+  AVAILABILITY_PRECISION_INSUFFICIENT: "availability_precision_insufficient",
+  SOURCE_RATE_LIMITED: "source_rate_limited",
+  SOURCE_UNAVAILABLE: "source_unavailable",
+  PARSE_UNSUPPORTED: "parse_unsupported",
+  PARSE_FAILED: "parse_failed",
+  DATASET_EXPIRED: "dataset_expired",
+  PERMISSION_DENIED: "permission_denied",
+  BUDGET_EXCEEDED: "budget_exceeded",
+  INVALID_SQL: "invalid_sql",
+  UNSAFE_QUERY: "unsafe_query",
+  RENDER_FAILED: "render_failed",
+  REVISION_CONFLICT: "revision_conflict",
+} as const;

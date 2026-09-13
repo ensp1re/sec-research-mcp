@@ -1,0 +1,15 @@
+.local/
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.DS_Store
+docs/harness/runs/*
+!docs/harness/runs/.gitkeep
+docs/harness/state.lock
+docs/harness/*.tmp-*
+docs/harness/.*.tmp-*
+*.log
+.env
+.env.*
+!.env.example

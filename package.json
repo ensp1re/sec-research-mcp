@@ -1,0 +1,36 @@
+{
+  "name": "sec-research-mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Open SEC research product for agents: evidence, reproducible analysis, charts, and reports. Working name; package and trademark availability are unchecked.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "prepare": "husky",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -b",
+    "test:harness": "node --test scripts/harness/runner.test.mjs",
+    "test:domain": "npm run test -w @sec-research/domain",
+    "validate": "node scripts/harness/runner.mjs --root . validate",
+    "verify": "npm run typecheck && npm run lint && npm run test:harness && npm run test:domain && npm run validate",
+    "test": "npm run verify",
+    "harness": "node scripts/harness/runner.mjs --root .",
+    "context": "node scripts/harness/runner.mjs --root . context"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.36.0",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.0"
+  }
+}

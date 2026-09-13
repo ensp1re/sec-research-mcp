@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checks": [
+    {
+      "id": "harness",
+      "argv": ["node", "--test", "scripts/harness/runner.test.mjs"],
+      "cwd": ".",
+      "timeoutSeconds": 120,
+      "required": true
+    },
+    {
+      "id": "typecheck",
+      "argv": ["npm", "run", "typecheck"],
+      "cwd": ".",
+      "timeoutSeconds": 120,
+      "required": true
+    },
+    {
+      "id": "domain",
+      "argv": ["npm", "run", "test", "-w", "@sec-research/domain"],
+      "cwd": ".",
+      "timeoutSeconds": 60,
+      "required": true
+    },
+    {
+      "id": "lint",
+      "argv": ["npm", "run", "lint"],
+      "cwd": ".",
+      "timeoutSeconds": 60,
+      "required": true
+    }
+  ],
+  "fingerprintPaths": [
+    "packages",
+    "scripts/harness",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.base.json",
+    "tsconfig.json",
+    "eslint.config.js",
+    ".husky",
+    "AGENTS.md",
+    "PLAN.md",
+    "SECURITY.md",
+    "docs/product",
+    "docs/architecture",
+    "docs/upstream.md",
+    "docs/harness/config.json",
+    ".github/workflows/ci.yml"
+  ],
+  "delivery": {
+    "provider": "github",
+    "defaultBranch": "main",
+    "requirePR": true
+  }
+}
