@@ -39,10 +39,12 @@ Demo mode (default): labeled fixtures, no EDGAR. Live mode: set `SEC_USER_AGENT`
 
 1. `sec_coverage_get` — see demo vs live and supported metrics.
 2. `sec_company_resolve` with the user's ticker, CIK, or name. If the result lists `candidates`, stop and ask which entity.
-3. `sec_financials_get` for a reviewed metric (`revenue`, `net_income`, `cash`, `gross_margin`, `operating_cash_flow`).
-4. `sec_chart_create` only after a series exists. Show SVG/CSV; do not invent plot points.
-5. `sec_filing_read` for text. Demo returns a sample 10-K excerpt labeled as a fixture.
-6. `sec_research_run` when the user wants a packet (question, table, coverage, sources).
+3. `sec_filings_search` then `sec_filing_read` (accession + optional section). Compare two filings with `sec_filing_compare`.
+4. `sec_concepts_search` then `sec_financials_get` for a reviewed metric.
+5. `sec_companies_compare` for several entities; do not calendar-align fiscal periods silently.
+6. `sec_dataset_describe` / `sec_dataset_query` / `sec_dataset_export` on the `dataset_id` from financials or compare.
+7. `sec_chart_create` only after a series exists. Show SVG/CSV; do not invent plot points.
+8. `sec_research_run` when the user wants a packet (question, table, coverage, sources).
 
 Load [references/tools.md](references/tools.md) for arguments. Load [references/contracts.md](references/contracts.md) before interpreting numbers.
 

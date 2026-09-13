@@ -1,9 +1,9 @@
 import type { FactPoint } from "./financials.js";
 
 export interface QueryInput {
-  select?: readonly string[];
-  metricId?: string;
-  limit?: number;
+  select?: readonly string[] | undefined;
+  metricId?: string | undefined;
+  limit?: number | undefined;
 }
 
 export function queryFacts(rows: readonly FactPoint[], input: QueryInput): FactPoint[] {
