@@ -12,6 +12,7 @@ export {
   REVISION_POLICY,
 } from "./constants/period.js";
 export { DERIVATION, MISSINGNESS, SIGN_POLICY } from "./constants/numeric.js";
+export { METRIC_ID } from "./constants/metric.js";
 export { COVERAGE_STATUS, ROW_COUNT_KIND, SOURCE_FAMILY } from "./constants/coverage.js";
 export { DEPLOYMENT_PROFILE, JOB_STATE } from "./constants/job.js";
 export { LOCATOR_KIND, RETENTION_MODE } from "./constants/dataset.js";
@@ -47,6 +48,7 @@ export type {
   RevisionSelection,
   TemporalProvenance,
 } from "./types/period.js";
+export type { MetricId } from "./types/metric.js";
 export type {
   Derivation,
   MetricDefinition,

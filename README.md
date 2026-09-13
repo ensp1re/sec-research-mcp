@@ -19,8 +19,14 @@ npm install
 npm test
 npm run lint
 npm run lint:fix
+npm run demo
+node apps/cli/dist/main.js doctor
 node scripts/harness/runner.mjs --root . context
 ```
+
+`npm run demo` prints a fixture-backed evidence packet (AAPL revenue). Live SEC requests need `SEC_USER_AGENT` and still go through the allowlisted broker only.
+
+MCP stdio: `node apps/mcp/dist/server.js`
 
 `npm test` is the full gate: typecheck, ESLint, harness tests, domain tests, and harness validate. Husky runs that gate on every commit and every push.
 

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sec-research.local/schemas/result-envelope.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "requestId", "data", "sources", "coverage", "warnings"],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "requestId": { "type": "string" },
+    "data": { "type": ["object", "array", "null"] },
+    "sources": { "type": "array" },
+    "coverage": {
+      "type": "object",
+      "required": ["status", "scope"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete_within_scope", "incomplete", "unavailable", "unknown"]
+        },
+        "scope": { "type": "string" }
+      }
+    },
+    "warnings": { "type": "array" }
+  }
+}
