@@ -16,7 +16,7 @@ Replace `<repo-root>` with an absolute path. Build first: `npm run build`.
 }
 ```
 
-Optional live env:
+Optional: set `SEC_USER_AGENT` to your contact string. If unset, the server generates one. `SEC_DEMO=1` uses fixtures.
 
 ```json
 "env": { "SEC_USER_AGENT": "YourName your@email.example" }

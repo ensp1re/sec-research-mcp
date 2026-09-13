@@ -15,8 +15,13 @@ import {
   runFilingRead,
   runFilingsSearch,
   runFinancials,
+  runHoldings,
   runResearch,
   runResolve,
+  runRulemaking,
+  runWatchCreate,
+  runWatchEvaluate,
+  runWatchList,
   type Runtime,
 } from "@sec-research/engine";
 
@@ -25,6 +30,7 @@ const runtime: Runtime = {
   fixtureDir: path.join(root, "fixtures/demo"),
   cacheDir: path.join(root, ".cache/objects"),
   userAgent: process.env.SEC_USER_AGENT ?? null,
+  demo: process.env.SEC_DEMO === "1",
 };
 
 const server = new McpServer({ name: "sec-research-mcp", version: "0.0.0" });
@@ -43,6 +49,11 @@ server.registerTool("sec_dataset_query", { description: "Bounded filter or singl
 server.registerTool("sec_dataset_export", { description: "Export dataset CSV with exact decimal strings.", inputSchema: { dataset_id: z.string() } }, async ({ dataset_id }) => text(await runDatasetExport(runtime, dataset_id)));
 server.registerTool("sec_chart_create", { description: "Chart from a company metric series (SVG/PNG/CSV/Vega-Lite).", inputSchema: { query: z.string(), metric: z.string().default("revenue") } }, async ({ query, metric }) => text(await runChart(runtime, query, metric ?? "revenue")));
 server.registerTool("sec_research_run", { description: "Evidence packet: series, methods, coverage, sources, chart.", inputSchema: { query: z.string(), metric: z.string().default("revenue") } }, async ({ query, metric }) => text(await runResearch(runtime, query, metric ?? "revenue")));
+server.registerTool("sec_holdings_get", { description: "13F-style holdings rows. Missing share/value stay null.", inputSchema: { query: z.string() } }, async ({ query }) => text(await runHoldings(runtime, query)));
+server.registerTool("sec_rulemaking_get", { description: "Rulemaking/comment documents with sourced status." }, async () => text(await runRulemaking(runtime)));
+server.registerTool("sec_watch_create", { description: "Create a persistent filing watch.", inputSchema: { query: z.string(), workspaceId: z.string().default("ws_local") } }, async ({ query, workspaceId }) => text(await runWatchCreate(runtime, { query, workspaceId: workspaceId ?? "ws_local" })));
+server.registerTool("sec_watch_list", { description: "List watches in a workspace.", inputSchema: { workspaceId: z.string().default("ws_local") } }, async ({ workspaceId }) => text(await runWatchList(runtime, workspaceId ?? "ws_local")));
+server.registerTool("sec_watch_events", { description: "Evaluate a watch against current filings; restart-safe dedup.", inputSchema: { watchId: z.string(), query: z.string(), workspaceId: z.string().optional() } }, async ({ watchId, query, workspaceId }) => text(await runWatchEvaluate(runtime, watchId, query, workspaceId)));
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

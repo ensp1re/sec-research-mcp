@@ -11,8 +11,13 @@ import {
   runFilingRead,
   runFilingsSearch,
   runFinancials,
+  runHoldings,
   runResearch,
   runResolve,
+  runRulemaking,
+  runWatchCreate,
+  runWatchEvaluate,
+  runWatchList,
   type Runtime,
 } from "@sec-research/engine";
 
@@ -23,6 +28,7 @@ function runtime(): Runtime {
     fixtureDir: path.join(root, "fixtures/demo"),
     cacheDir: path.join(root, ".cache/objects"),
     userAgent: process.env.SEC_USER_AGENT ?? null,
+    demo: process.env.SEC_DEMO === "1",
   };
 }
 
@@ -48,8 +54,13 @@ async function main(argv: string[]): Promise<void> {
   else if (command === "compare") print(await runCompare(runtime(), (argv[1] ?? "AAPL,MSFT").split(","), argv[2] ?? "revenue"));
   else if (command === "concepts") print(await runConceptsSearch(argv[1] ?? "revenue"));
   else if (command === "filing-compare") print(await runFilingCompare(runtime(), argv[1] ?? "AAPL", argv[2] ?? "", argv[3] ?? "", argv[4]));
+  else if (command === "holdings") print(await runHoldings(runtime(), argv[1] ?? "AAPL"));
+  else if (command === "rulemaking") print(await runRulemaking(runtime()));
+  else if (command === "watch-create") print(await runWatchCreate(runtime(), { workspaceId: argv[2] ?? "ws_local", query: argv[1] ?? "AAPL" }));
+  else if (command === "watch-list") print(await runWatchList(runtime(), argv[1] ?? "ws_local"));
+  else if (command === "watch-eval") print(await runWatchEvaluate(runtime(), argv[1] ?? "", argv[2] ?? "AAPL", argv[3]));
   else {
-    console.log("usage: sec-research <doctor|coverage|demo|resolve|financials|chart|filings|filing|compare|concepts|filing-compare|research> [...]");
+    console.log("usage: sec-research <doctor|coverage|demo|resolve|financials|chart|filings|filing|compare|concepts|filing-compare|research|holdings|rulemaking|watch-create|watch-list|watch-eval> [...]");
   }
 }
 

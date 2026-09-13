@@ -1,0 +1,6 @@
+{
+  "documents": [
+    { "title": "Sample proposal", "identifier": "S7-01-24", "publishedAt": "2024-01-15", "status": "proposed" },
+    { "title": "Sample adoption", "identifier": "S7-02-24", "publishedAt": "2024-06-01", "status": "adopted" }
+  ]
+}

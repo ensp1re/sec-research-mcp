@@ -17,5 +17,10 @@ All tools return a JSON envelope: `schemaVersion`, `requestId`, `data`, `sources
 | `sec_dataset_export` | `dataset_id` | CSV with decimal strings |
 | `sec_chart_create` | `query`, `metric` | SVG, PNG, CSV, Vega-Lite |
 | `sec_research_run` | `query`, `metric` | Markdown packet + chart + coverage |
+| `sec_holdings_get` | `query` | 13F-style holdings |
+| `sec_rulemaking_get` | none | Rulemaking documents |
+| `sec_watch_create` | `query`, `workspaceId` | Persist a watch |
+| `sec_watch_list` | `workspaceId` | List watches |
+| `sec_watch_events` | `watchId`, `query` | Evaluate; deduped events |
 
-Live EDGAR: set `SEC_USER_AGENT`. Demo fixtures otherwise.
+Live EDGAR is default with a generated User-Agent if `SEC_USER_AGENT` is unset. `SEC_DEMO=1` uses fixtures.

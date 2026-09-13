@@ -6,6 +6,11 @@ import { compareSeries } from "./compare.js";
 import { exportCsv, loadDataset, queryDataset, saveDataset } from "./datasets.js";
 import { htmlToText, extractSection } from "./documents.js";
 import { cachedGet, companyFactsUrl, filingDocumentUrl, makeBroker, submissionsUrl, tickerMapUrl } from "./edgar.js";
+import { holdingsUrl, parse13F, thirteenFAccessions } from "./holdings.js";
+import { runIsolatedQuery } from "./isolated-query.js";
+import { parseRulemaking, rulemakingUrl } from "./rulemaking.js";
+import { resolveUserAgent } from "./user-agent.js";
+import { createWatch, evaluateWatch, listWatchEvents, listWatches } from "./watches.js";
 import { envelope } from "./envelope.js";
 import { coverageFor, extractSeries, parseCompanyFactsJson, type FactPoint } from "./financials.js";
 import { compareParagraphs } from "./filing-compare.js";
@@ -13,23 +18,30 @@ import { parseSubmissions, searchFilings } from "./filings.js";
 import { listMetrics, parseMetricId } from "./metrics.js";
 import { deriveQ4IfEligible, preferDiscreteQuarters } from "./periods.js";
 import { evidencePacket } from "./research.js";
-import { loadTickerMap, resolveCompany } from "./resolve.js";
+import { loadTickerMap, padCik, resolveCompany } from "./resolve.js";
 
 export interface Runtime {
   fixtureDir: string;
   cacheDir: string;
   userAgent: string | null;
   fetchImpl?: typeof fetch | undefined;
+  demo?: boolean | undefined;
 }
 
 export function isLive(runtime: Runtime): boolean {
-  return Boolean(runtime.userAgent);
+  if (runtime.demo === true) return false;
+  if (runtime.fetchImpl) return true;
+  if (runtime.userAgent) return true;
+  return process.env.SEC_DEMO !== "1";
+}
+
+function broker(runtime: Runtime) {
+  return makeBroker(resolveUserAgent(runtime.userAgent), runtime.fetchImpl);
 }
 
 async function loadTickers(runtime: Runtime) {
   if (isLive(runtime)) {
-    const broker = makeBroker(runtime.userAgent!, runtime.fetchImpl);
-    const got = await cachedGet(runtime.cacheDir, broker, tickerMapUrl());
+    const got = await cachedGet(runtime.cacheDir, broker(runtime), tickerMapUrl());
     return loadTickerMap(JSON.parse(got.body));
   }
   return loadTickerMap(JSON.parse(await readFile(path.join(runtime.fixtureDir, "tickers.json"), "utf8")));
@@ -37,8 +49,7 @@ async function loadTickers(runtime: Runtime) {
 
 async function loadFactsText(runtime: Runtime, cik: string): Promise<string> {
   if (isLive(runtime)) {
-    const broker = makeBroker(runtime.userAgent!, runtime.fetchImpl);
-    return (await cachedGet(runtime.cacheDir, broker, companyFactsUrl(cik))).body;
+    return (await cachedGet(runtime.cacheDir, broker(runtime), companyFactsUrl(cik))).body;
   }
   const local = path.join(runtime.fixtureDir, `companyfacts-${cik}.json`);
   try {
@@ -51,8 +62,7 @@ async function loadFactsText(runtime: Runtime, cik: string): Promise<string> {
 
 async function loadSubmissions(runtime: Runtime, cik: string): Promise<unknown> {
   if (isLive(runtime)) {
-    const broker = makeBroker(runtime.userAgent!, runtime.fetchImpl);
-    return JSON.parse((await cachedGet(runtime.cacheDir, broker, submissionsUrl(cik))).body);
+    return JSON.parse((await cachedGet(runtime.cacheDir, broker(runtime), submissionsUrl(cik))).body);
   }
   const local = path.join(runtime.fixtureDir, `submissions-${cik}.json`);
   return JSON.parse(await readFile(local, "utf8"));
@@ -169,8 +179,7 @@ export async function runFilingRead(runtime: Runtime, query?: string, accession?
   }
   let html: string;
   if (isLive(runtime)) {
-    const broker = makeBroker(runtime.userAgent!, runtime.fetchImpl);
-    html = (await cachedGet(runtime.cacheDir, broker, filingDocumentUrl(entity.cik!, filing.accession, filing.primaryDocument))).body;
+    html = (await cachedGet(runtime.cacheDir, broker(runtime), filingDocumentUrl(entity.cik!, filing.accession, filing.primaryDocument))).body;
   } else {
     html = await readFile(path.join(runtime.fixtureDir, "filing.html"), "utf8");
   }
@@ -254,10 +263,13 @@ export async function runDatasetDescribe(runtime: Runtime, datasetId: string) {
 
 export async function runDatasetQuery(runtime: Runtime, datasetId: string, opts: { metricId?: string | undefined; limit?: number | undefined; sql?: string | undefined }) {
   const record = await loadDataset(runtime.cacheDir, datasetId);
-  const points = queryDataset(record, opts);
+  const file = path.join(runtime.cacheDir, "datasets", `${datasetId}.json`);
+  const points = opts.sql
+    ? await runIsolatedQuery(file, opts.sql)
+    : queryDataset(record, opts);
   return envelope({
     requestId: "dataset_query",
-    data: { dataset_id: record.datasetId, points, row_count: points.length, row_count_kind: "exact" },
+    data: { dataset_id: record.datasetId, points, row_count: points.length, row_count_kind: "exact", isolated: Boolean(opts.sql) },
     coverage: coverageFor(points, record.datasetId),
   });
 }
@@ -287,7 +299,9 @@ export async function runCoverage(runtime: Runtime) {
       demo: !isLive(runtime),
       metrics: listMetrics().map((metric) => metric.id),
       sources: ["entity_maps", "submissions", "company_facts", "filing_archives"],
-      note: isLive(runtime) ? "live SEC via allowlisted broker and local cache" : "fixture demo; set SEC_USER_AGENT for live",
+      note: isLive(runtime)
+        ? "live SEC via allowlisted broker and local cache"
+        : "fixture demo; unset SEC_DEMO for live (User-Agent is generated if SEC_USER_AGENT is unset)",
     },
     coverage: { ...emptyCoverage("service"), status: isLive(runtime) ? COVERAGE_STATUS.COMPLETE_WITHIN_SCOPE : COVERAGE_STATUS.INCOMPLETE },
   });
@@ -311,7 +325,119 @@ export async function runDoctor(runtime: Runtime) {
   await mkdir(runtime.cacheDir, { recursive: true });
   checks.cache_ok = true;
   const ok = checks.node_ok === true && checks.fixtures_ok === true && checks.cache_ok === true;
-  return envelope({ requestId: "doctor", data: { ok, checks } });
+  return envelope({ requestId: "doctor", data: { ok, checks, userAgent: resolveUserAgent(runtime.userAgent) } });
+}
+
+export async function runHoldings(runtime: Runtime, query: string) {
+  const entityOrErr = await requireEntity(runtime, query);
+  if ("errorEnvelope" in entityOrErr) return entityOrErr.errorEnvelope;
+  const entity = entityOrErr;
+  const url = holdingsUrl(padCik(entity.cik!));
+  let payload: unknown;
+  let sourceUrl = url;
+  if (isLive(runtime)) {
+    const got = await cachedGet(runtime.cacheDir, broker(runtime), url);
+    try {
+      payload = JSON.parse(got.body);
+    } catch {
+      payload = {};
+    }
+    sourceUrl = url;
+  } else {
+    const file = path.join(runtime.fixtureDir, `13f-${entity.cik}.json`);
+    try {
+      payload = JSON.parse(await readFile(file, "utf8"));
+      sourceUrl = file;
+    } catch {
+      payload = {};
+    }
+  }
+  const rows = parse13F(payload, sourceUrl);
+  const accessions = rows.length ? [] : thirteenFAccessions(payload);
+  const sources = rows.length
+    ? rows.map((row) => ({
+        sourceId: row.sourceUrl,
+        locatorKind: LOCATOR_KIND.TABLE_ROW,
+        locator: row.cusip ?? row.issuer,
+        accession: null,
+        documentId: null,
+        contentHash: "13f",
+        parserVersion: "0.0.0",
+      }))
+    : accessions.map((accession) => ({
+        sourceId: sourceUrl,
+        locatorKind: LOCATOR_KIND.TABLE_ROW,
+        locator: accession,
+        accession,
+        documentId: null,
+        contentHash: "13f-hr",
+        parserVersion: "0.0.0",
+      }));
+  return envelope({
+    requestId: "holdings",
+    data: {
+      entity,
+      holdings: rows,
+      row_count: rows.length,
+      thirteenFAccessions: accessions,
+      coverageNote: rows.length ? null : "structured_13f_holdings_not_in_payload",
+    },
+    sources,
+    coverage: {
+      ...emptyCoverage("13f"),
+      status: rows.length ? COVERAGE_STATUS.COMPLETE_WITHIN_SCOPE : COVERAGE_STATUS.INCOMPLETE,
+      exclusions: rows.length ? [] : ["structured_13f_holdings_not_in_payload"],
+    },
+  });
+}
+
+export async function runRulemaking(runtime: Runtime) {
+  const url = rulemakingUrl();
+  let payload: unknown;
+  if (isLive(runtime)) {
+    const got = await cachedGet(runtime.cacheDir, broker(runtime), url);
+    try {
+      payload = JSON.parse(got.body);
+    } catch {
+      payload = { documents: [] };
+    }
+  } else {
+    payload = JSON.parse(await readFile(path.join(runtime.fixtureDir, "rulemaking.json"), "utf8"));
+  }
+  const documents = parseRulemaking(payload, url);
+  return envelope({
+    requestId: "rulemaking",
+    data: { documents, row_count: documents.length },
+    sources: documents.map((row) => ({
+      sourceId: row.sourceUrl,
+      locatorKind: LOCATOR_KIND.ELEMENT_ID,
+      locator: row.identifier ?? row.title,
+      accession: null,
+      documentId: row.identifier,
+      contentHash: "rulemaking",
+      parserVersion: "0.0.0",
+    })),
+    coverage: {
+      ...emptyCoverage("rulemaking"),
+      status: documents.length ? COVERAGE_STATUS.COMPLETE_WITHIN_SCOPE : COVERAGE_STATUS.INCOMPLETE,
+    },
+  });
+}
+
+export async function runWatchCreate(runtime: Runtime, input: { workspaceId: string; query: string; forms?: string[] }) {
+  const watch = await createWatch(runtime.cacheDir, input);
+  return envelope({ requestId: "watch_create", data: watch });
+}
+
+export async function runWatchList(runtime: Runtime, workspaceId: string) {
+  return envelope({ requestId: "watch_list", data: { watches: await listWatches(runtime.cacheDir, workspaceId) } });
+}
+
+export async function runWatchEvaluate(runtime: Runtime, watchId: string, query: string, workspaceId?: string) {
+  const filings = await runFilingsSearch(runtime, query);
+  const rows = ((filings.data as { filings?: { accession: string; form: string }[] }).filings) ?? [];
+  const created = await evaluateWatch(runtime.cacheDir, watchId, rows, workspaceId);
+  return envelope({ requestId: "watch_evaluate", data: { events: created, all: await listWatchEvents(runtime.cacheDir, watchId) } });
 }
 
 function sourceRows(points: FactPoint[], metricId: string) {

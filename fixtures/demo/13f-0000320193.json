@@ -1,0 +1,6 @@
+{
+  "holdings": [
+    { "issuer": "NVIDIA CORP", "cusip": "67066G104", "shares": "1000", "value": "500000" },
+    { "issuer": "UNKNOWN CO", "cusip": null, "shares": null, "value": null }
+  ]
+}
