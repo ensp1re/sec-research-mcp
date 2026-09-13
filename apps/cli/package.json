@@ -1,0 +1,16 @@
+{
+  "name": "@sec-research/cli",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "sec-research": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@sec-research/engine": "0.0.0"
+  }
+}

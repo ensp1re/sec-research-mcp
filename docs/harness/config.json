@@ -28,6 +28,13 @@
       "cwd": ".",
       "timeoutSeconds": 60,
       "required": true
+    },
+    {
+      "id": "product",
+      "argv": ["npm", "run", "test:product"],
+      "cwd": ".",
+      "timeoutSeconds": 60,
+      "required": false
     }
   ],
   "fingerprintPaths": [
@@ -45,7 +52,11 @@
     "docs/product",
     "docs/architecture",
     "docs/upstream.md",
+    "docs/methods",
     "docs/harness/config.json",
+    "fixtures",
+    "schemas",
+    "apps",
     ".github/workflows/ci.yml"
   ],
   "delivery": {

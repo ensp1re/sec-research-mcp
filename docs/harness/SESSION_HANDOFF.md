@@ -4,10 +4,10 @@ This is a readable view of `docs/harness/handoff.json`. Update decisions, reject
 
 ## Current checkpoint
 
-- Updated at: 2026-09-13T21:11:15.555Z
+- Updated at: 2026-09-13T21:42:30.787Z
 - Task: none
 - Plan: PLAN.md
-- Git: osprey @ 9b6a9ab25443852058eb76659e9f7ccfe49e688f (dirty)
+- Git: feat/phase-0-core @ f9cc9c053db5555221a7e9878c9ef1e23abf564d (dirty)
 - Evidence refs:
 - None recorded
 
