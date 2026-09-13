@@ -17,6 +17,7 @@ This file is the project router. Read only the linked document needed for the cu
 - Work one feature slice at a time.
 - Keep SEC domain types independent of the MCP SDK and of third-party server frameworks.
 - Do not put competitor names, their repository URLs, or their commit pins in git, GitHub, CI, or public docs. Keep those notes in `.local/` (gitignored).
+- Agent how-to for this MCP lives in [skills/](skills/). Load `sec-research` before calling tools. Load `sec-research-orchestrate` when more than one agent or company is in play.
 - Put named interfaces, type aliases, and enums in the owning package's `src/types/` tree. Put finite runtime domain values in `src/constants/` as `as const` objects. Type modules derive unions from those objects with type-only imports. Implementation files use `import type` for erased declarations and ordinary imports for constants. Do not declare named interfaces in implementation files.
 - Start a package only when its boundary is used. Do not add empty scaffolding.
 - The fetch broker is the only component allowed to make SEC requests. Query and render workers have no general outbound network.

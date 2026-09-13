@@ -61,6 +61,8 @@ Point an MCP client at the built server. Logs stay on stderr.
 
 Tools: `sec_company_resolve`, `sec_financials_get`, `sec_chart_create`, `sec_filing_read`, `sec_research_run`, `sec_coverage_get`.
 
+Agents: copy [skills/](skills/) into the client skills path. `sec-research` is the single-worker MCP workflow. `sec-research-orchestrate` splits resolve / numbers / filings / charts / critic across agents.
+
 ## Live EDGAR
 
 Live requests need a descriptive User-Agent with contact, as the SEC asks:

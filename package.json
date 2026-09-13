@@ -21,7 +21,7 @@
     "test:harness": "node --test scripts/harness/runner.test.mjs",
     "test:domain": "npm run test -w @sec-research/domain",
     "validate": "node scripts/harness/runner.mjs --root . validate",
-    "test:product": "node --test packages/engine/dist/engine.test.js packages/engine/dist/golden.test.js",
+    "test:product": "node --test packages/engine/dist/engine.test.js packages/engine/dist/golden.test.js tests/skills.catalog.test.mjs",
     "demo": "node apps/cli/dist/main.js demo",
     "verify": "npm run typecheck && npm run lint && npm run test:harness && npm run test:domain && npm run test:product && npm run validate",
     "test": "npm run verify",
