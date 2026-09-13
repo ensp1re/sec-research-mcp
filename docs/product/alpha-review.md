@@ -14,7 +14,6 @@ Date: 2026-09-14
 
 - Demo mode uses labeled fixtures, not a live EDGAR crawl.
 - Live fetches require `SEC_USER_AGENT` and go only through the allowlisted broker.
-- Interview study (F002) is still blocked: six live sessions have not been run.
 - Advanced SQL is rejected except a single SELECT gate; DuckDB isolation is not in this alpha.
 - Hosted workspaces, watches, and ownership packs are out of this slice.
 

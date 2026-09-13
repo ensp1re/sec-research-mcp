@@ -4,30 +4,29 @@ This is a readable view of `docs/harness/handoff.json`. Update decisions, reject
 
 ## Current checkpoint
 
-- Updated at: 2026-09-13T21:42:30.787Z
+- Updated at: 2026-09-13T21:46:42.114Z
 - Task: none
 - Plan: PLAN.md
-- Git: feat/phase-0-core @ f9cc9c053db5555221a7e9878c9ef1e23abf564d (dirty)
+- Git: feat/remove-f002 @ c59dc78594ac602971d00d72c100d4921c38022f (dirty)
 - Evidence refs:
 - None recorded
 
 ## Next action
 
-Start F002 interviews, or F003 reuse inventory using local-only notes.
+No live tasks remain. Queue is empty after F002 removal.
 
 ## Decisions
 
 - Native Node harness runner in scripts/harness/runner.mjs.
 - Domain types and constants live in packages/domain under src/types and src/constants.
 - F001 reference notes stay in .local/ and are not published.
-- Working name is SEC Research MCP until naming is checked.
+- F002 was removed from the queue; live interview work is out of scope.
 
 ## Rejected approaches
 
 - Publishing third-party product names or commit pins on GitHub.
-- Implementing a sample MCP server only to make bootstrap checks green.
-- Using ticker strings as primary keys.
+- Keeping a blocked interview task in the implementation queue.
 
 ## Blockers
 
-- F002 requires human interviews.
+- None recorded

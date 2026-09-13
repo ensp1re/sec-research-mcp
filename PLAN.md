@@ -8,7 +8,7 @@ See [docs/product/PROJECT.md](docs/product/PROJECT.md).
 
 ## State
 
-- Status: F001/F016 passing. F002 blocked on live interviews. F003–F015 implemented in this slice.
+- Status: F001 and F003–F016 passing. F002 removed from the queue.
 - Current task ID: none active
 - Base branch: `main`
 - Tracking record: [docs/harness/tasks.json](docs/harness/tasks.json)
@@ -21,8 +21,7 @@ IDs match `docs/harness/tasks.json`. SEC-* labels are the product backlog IDs fr
 | ID | Slice | Dependencies | Verification | Status |
 | --- | --- | --- | --- | --- |
 | F001 | Record a pinned public EDGAR reference baseline locally (SEC-001) | | harness, typecheck, lint, domain | passing |
-| F002 | Interview six users across three groups (SEC-002) | | documented interview notes | blocked |
-| F003 | Inventory reuse, licenses, and dependency choices (SEC-003) | F001 | attribution plan in docs/upstream.md | implemented |
+| F003 | Inventory reuse, licenses, and dependency choices (SEC-003) | F001 | attribution plan in docs/upstream.md | passing |
 | F004 | Complete entity/fact/period/source/coverage contracts (SEC-004) | F001 | reviewed schemas and missingness rules | implemented |
 | F005 | Independent golden source fixtures (SEC-005) | F004 | expected numeric and cutoff values | implemented |
 | F006 | Finish contract generation beyond this bootstrap (SEC-006 remainder) | F003, F004 | generated public schemas | implemented |
