@@ -10,6 +10,9 @@ export default [
       "coverage/**",
       "docs/harness/runs/**",
       "docs/harness/archive/**",
+      ".cache/**",
+      "out/**",
+      ".playwright-mcp/**",
     ],
   },
   {
